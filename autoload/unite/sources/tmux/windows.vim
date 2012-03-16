@@ -1,7 +1,7 @@
 " File: windows.vim
 " Author: Josiah Gordon <josiahg@gmail.com>
 " Description: tmux window source for unite
-" Last Modified: March 09, 2012
+" Last Modified: March 16, 2012
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -97,7 +97,7 @@ let s:source.action_table.tmux = s:action_table
 " }}}
 
 function! s:action_table.new.func(candidate) " {{{
-    let l:tmux_cmd = s:tmux_cmd(a:candidate.socket)
+    let l:tmux_cmd = tmux#tmux_cmd(a:candidate.socket)
     call unite#util#system(l:tmux_cmd . " new-window -ad " .
                 \ " -t " . a:candidate.window_id
                 \ )
@@ -124,7 +124,7 @@ function! s:action_table.swap.func(candidate) " {{{
 endfunction "}}}
 
 function! s:action_table.kill.func(candidate) " {{{
-    let l:tmux_cmd = s:tmux_cmd(a:candidate.socket)
+    let l:tmux_cmd = tmux#tmux_cmd(a:candidate.socket)
     call unite#util#system(l:tmux_cmd . " kill-window " .
                 \ " -t " . a:candidate.window_id
                 \ )
@@ -142,16 +142,15 @@ function! s:action_table.link.func(candidate) " {{{
 endfunction "}}}
 
 function! s:action_table.unlink.func(candidate) " {{{
-    let l:tmux_cmd = s:tmux_cmd(a:candidate.socket)
+    let l:tmux_cmd = tmux#tmux_cmd(a:candidate.socket)
     call unite#util#system(l:tmux_cmd . " unlink-window " .
                 \ " -t " . a:candidate.window_id
                 \ )
 endfunction "}}}
 
-
 function! s:get_window_list(socket) "{{{
     " Setup the tmux command to use a different socket if socket is set.
-    let l:tmux_cmd = s:tmux_cmd(a:socket)
+    let l:tmux_cmd = tmux#tmux_cmd(a:socket)
 
     " Get a list of the window on the server.
     let temp_list = unite#util#system(
@@ -167,15 +166,6 @@ function! s:get_window_list(socket) "{{{
     endfor
     return window_list
 endfunction "}}}
-
-function! s:tmux_cmd(socket) " {{{
-    " Setup the tmux command to use a different socket if socket is set.
-    if empty(a:socket)
-        return "tmux"
-    else
-        return "tmux -L " . a:socket
-    endif
-endfunction " }}}
 
 let &cpo = s:save_cpo
 unlet s:save_cpo

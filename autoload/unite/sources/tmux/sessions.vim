@@ -1,7 +1,7 @@
 " File: sessions.vim
 " Author: Josiah Gordon <josiahg@gmail.com>
 " Description: Sessions actions source for unite
-" Last Modified: March 09, 2012
+" Last Modified: March 16, 2012
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -94,19 +94,19 @@ let s:source.action_table.tmux = s:action_table
 " }}}
 
 function! s:action_table.linknew.func(candidate) " {{{
-    let l:tmux_cmd = s:tmux_cmd(a:candidate.socket)
+    let l:tmux_cmd = tmux#tmux_cmd(a:candidate.socket)
     call unite#util#system(l:tmux_cmd . " new-session -d " .
                 \ " -t " . a:candidate.session_id
                 \ )
 endfunction "}}}
 
 function! s:action_table.new.func(candidate) " {{{
-    let l:tmux_cmd = s:tmux_cmd(a:candidate.socket)
+    let l:tmux_cmd = tmux#tmux_cmd(a:candidate.socket)
     call unite#util#system(l:tmux_cmd . " new-session -d ")
 endfunction "}}}
 
 function! s:action_table.kill.func(candidate) " {{{
-    let l:tmux_cmd = s:tmux_cmd(a:candidate.socket)
+    let l:tmux_cmd = tmux#tmux_cmd(a:candidate.socket)
     call unite#util#system(l:tmux_cmd . " kill-session " .
                 \ " -t " . a:candidate.session_id
                 \ )
@@ -114,21 +114,21 @@ endfunction "}}}
 let s:source.alias_table.delete = 'kill'
 
 function! s:action_table.detach.func(candidate) " {{{
-    let l:tmux_cmd = s:tmux_cmd(a:candidate.socket)
+    let l:tmux_cmd = tmux#tmux_cmd(a:candidate.socket)
     call unite#util#system(l:tmux_cmd . " detach-client " .
                 \ "-s " . a:candidate.session_id
                 \ )
 endfunction "}}}
 
 function! s:action_table.lock.func(candidate) " {{{
-    let l:tmux_cmd = s:tmux_cmd(a:candidate.socket)
+    let l:tmux_cmd = tmux#tmux_cmd(a:candidate.socket)
     call unite#util#system(l:tmux_cmd . " lock-session " .
                 \ " -t " . a:candidate.session_id
                 \ )
 endfunction "}}}
 
 function! s:get_session_list(socket) "{{{
-    let l:tmux_cmd = s:tmux_cmd(a:socket)
+    let l:tmux_cmd = tmux#tmux_cmd(a:socket)
 
     " Get a list of the sessions on the server.
     let temp_list = unite#util#system(
@@ -144,15 +144,6 @@ function! s:get_session_list(socket) "{{{
     endfor
     return session_list
 endfunction "}}}
-
-function! s:tmux_cmd(socket) " {{{
-    " Setup the tmux command to use a different socket if socket is set.
-    if empty(a:socket)
-        return "tmux"
-    else
-        return "tmux -L " . a:socket
-    endif
-endfunction " }}}
 
 let &cpo = s:save_cpo
 unlet s:save_cpo

@@ -1,7 +1,7 @@
 " File: tmux.vim
 " Author: Josiah Gordon <josiahg@gmail.com>
 " Description: tmux kind for tmux unite source
-" Last Modified: March 09, 2012
+" Last Modified: March 16, 2012
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -48,7 +48,7 @@ let s:kind.action_table = {
             \ }
 
 function! s:kind.action_table.switch.func(candidate) " {{{
-    let l:tmux_cmd = s:tmux_cmd(a:candidate.socket)
+    let l:tmux_cmd = tmux#tmux_cmd(a:candidate.socket)
     let l:destination = split(a:candidate.word)[0]
     let l:split_dest = split(l:destination, ':')
     let l:session = l:split_dest[0] . ':'
@@ -75,10 +75,10 @@ function! s:kind.action_table.select.func(candidate) " {{{
     let l:source_id = a:candidate.source_id
     let l:source = a:candidate.source
     let l:action = a:candidate.action_type
-    if empty(l:source_id) && l:action !=# 'send-buffer'
+    if empty(l:source_id)
         call s:kind.action_table.switch.func(a:candidate)
     else
-        let l:tmux_cmd = s:tmux_cmd(a:candidate.socket)
+        let l:tmux_cmd = tmux#tmux_cmd(a:candidate.socket)
         if l:source ==# 'tmux/sessions' " {{{
             let l:target_id = a:candidate.session_id
             if l:action =~# 'link-window' " {{{
@@ -117,11 +117,14 @@ function! s:kind.action_table.select.func(candidate) " {{{
             " }}}
         elseif l:source ==# 'tmux/panes' " {{{
             let l:target_id = a:candidate.pane_id
-            if l:action ==# 'send-buffer' " {{{
+            if l:action ==# 'select' " {{{
+                let g:tmux_pane = l:target_id
+                " }}}
+            elseif l:action ==# 'send-buffer' " {{{
                 let l:range_start = a:candidate.range_start
                 let l:range_end = a:candidate.range_end
                 let g:tmux_pane = l:target_id
-                execute ":" . l:range_start . "," . l:range_end . "TmuxSend"
+                call tmux#send_range(l:range_start, l:range_end)
                 " }}}
             elseif l:action ==# 'join' " {{{
                 let l:split_type = a:candidate.split_type
@@ -140,15 +143,6 @@ function! s:kind.action_table.select.func(candidate) " {{{
                             \ )
             endif " }}}
         endif " }}}
-    endif
-endfunction " }}}
-
-function! s:tmux_cmd(socket) " {{{
-    " Setup the tmux command to use a different socket if socket is set.
-    if empty(a:socket)
-        return "tmux"
-    else
-        return "tmux -L " . a:socket
     endif
 endfunction " }}}
 
