@@ -1,7 +1,7 @@
 " File: panes.vim
 " Author: Josiah Gordon <josiahg@gmail.com>
 " Description: Tmux pane source for unite
-" Last Modified: March 16, 2012
+" Last Modified: April 03, 2012
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -56,6 +56,8 @@ function! s:source.gather_candidates(args, context)"{{{
         let l:socket = a:args[0]
         if len(a:args) > 1
             if type(a:args[1]) ==# 4
+                " The type of argument 1 is a dictionary so grab the values out
+                " of it.
                 let l:source_id = a:args[1].source_id
                 let l:action_type = a:args[1].action_type
                 let l:split_type = a:args[1].split_type
@@ -140,6 +142,7 @@ let s:source.action_table.tmux = s:action_table
 " }}}
 
 function! s:action_table.sendcommand.func(candidate) " {{{
+    " Send a command to the selected tmux pane.
     " Set the global target pane.
     let g:tmux_pane = a:candidate.pane_id
     call tmux#send_command()
@@ -151,18 +154,21 @@ function! s:action_table.selectpane.func(candidate) " {{{
 endfunction "}}}
 
 function! s:action_table.send.func(candidate) " {{{
+    " Send a range of text from the vim buffer to the selected tmux pane.
     " Set the global target pane.
     let g:tmux_pane = a:candidate.pane_id
     call tmux#send_range(a:candidate.range_start, a:candidate.range_end)
 endfunction "}}}
 
 function! s:action_table.break.func(candidate) " {{{
+    " Break the selected pane out of its window.
     let l:tmux_cmd = tmux#tmux_cmd(a:candidate.socket)
     call unite#util#system(
                 \ l:tmux_cmd . " break-pane -d -t " . a:candidate.pane_id)
 endfunction "}}}
 
 function! s:action_table.kill.func(candidate) " {{{
+    " Kill the selected pane.
     let l:tmux_cmd = tmux#tmux_cmd(a:candidate.socket)
     call unite#util#system(
                 \ l:tmux_cmd . " kill-pane -t " . a:candidate.pane_id)
@@ -170,7 +176,10 @@ endfunction "}}}
 let s:source.alias_table.delete = 'kill'
 
 function! s:action_table.join.func(candidate) " {{{
+    " Join two panes creating a horizontal split in the target pane.
     call unite#print_message("[tmux] Select the target pane")
+
+    " Open unite tmux/panes to select the target pane to split and join.
     call unite#start([[
                 \ 'tmux/panes', 
                 \ a:candidate.socket,
@@ -183,7 +192,10 @@ function! s:action_table.join.func(candidate) " {{{
 endfunction "}}}
 
 function! s:action_table.vjoin.func(candidate) " {{{
+    " Join to panes creating a vertical split in the target pane.
     call unite#print_message("[tmux] Select the target pane")
+
+    " Open unite tmux/panes to select the target pane to split and join to.
     call unite#start([[
                 \ 'tmux/panes', 
                 \ a:candidate.socket,
@@ -196,6 +208,7 @@ function! s:action_table.vjoin.func(candidate) " {{{
 endfunction "}}}
 
 function! s:action_table.split.func(candidate) " {{{
+    " Horizontally split the selected pane
     let l:tmux_cmd = tmux#tmux_cmd(a:candidate.socket)
     call unite#util#system(
                 \ l:tmux_cmd . " split-window -d " .
@@ -203,6 +216,7 @@ function! s:action_table.split.func(candidate) " {{{
 endfunction "}}}
 
 function! s:action_table.vsplit.func(candidate) " {{{
+    " Split a pain vertically
     let l:tmux_cmd = tmux#tmux_cmd(a:candidate.socket)
     call unite#util#system(
                 \ l:tmux_cmd . " split-window -dv " .
@@ -210,7 +224,11 @@ function! s:action_table.vsplit.func(candidate) " {{{
 endfunction "}}}
 
 function! s:action_table.swap.func(candidate) " {{{
+    " Swap two panes
     call unite#print_message("[tmux] Select the target pane")
+
+    " Open unite tmux/panes to select the pane to swap with the currently
+    " selected one.
     call unite#start([[
                 \ 'tmux/panes',
                 \ a:candidate.socket,

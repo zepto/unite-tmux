@@ -1,7 +1,7 @@
 " File: clients.vim
 " Author: Josiah Gordon <josiahg@gmail.com>
 " Description: Clients actions source for unite
-" Last Modified: March 16, 2012
+" Last Modified: April 03, 2012
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -113,9 +113,10 @@ endfunction "}}}
 let s:source.alias_table.delete = 'detach'
 
 function! s:action_table.switch.func(candidate) " {{{
+    " Switch a the client to a session
     call unite#print_message("[tmux] Select the target session")
     call unite#start([[
-                \ 'tmux/sessions', 
+                \ 'tmux/sessions',
                 \ a:candidate.socket,
                 \ a:candidate.client_id,
                 \ 'switch-client',

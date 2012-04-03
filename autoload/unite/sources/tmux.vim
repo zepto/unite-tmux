@@ -1,7 +1,7 @@
 " File: tmux.vim
 " Author: Josiah Gordon <josiahg@gmail.com>
 " Description: Tmux source for unite to control tmux.
-" Last Modified: March 08, 2012
+" Last Modified: April 03, 2012
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -46,6 +46,7 @@ let s:source = {
             \ }
 
 function! s:source.gather_candidates(args, context) "{{{
+    " Create the list of tmux sources [clients, panes, servers, windows]
     call unite#print_message('[tmux] tmux sources')
     return map(s:get_commands(), '{
                 \ "word" : v:val,
@@ -56,6 +57,7 @@ function! s:source.gather_candidates(args, context) "{{{
 endfunction "}}}
 
 function! s:get_commands() " {{{
+    " Return a list of vimscripts in the tmux directory
     return map(
                 \ split(
                 \   globpath(&runtimepath, 'autoload/unite/sources/tmux/*.vim'),

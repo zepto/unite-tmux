@@ -1,7 +1,7 @@
 " File: windows.vim
 " Author: Josiah Gordon <josiahg@gmail.com>
 " Description: tmux window source for unite
-" Last Modified: March 16, 2012
+" Last Modified: April 03, 2012
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -97,6 +97,7 @@ let s:source.action_table.tmux = s:action_table
 " }}}
 
 function! s:action_table.new.func(candidate) " {{{
+    " Create a new window after the selected window
     let l:tmux_cmd = tmux#tmux_cmd(a:candidate.socket)
     call unite#util#system(l:tmux_cmd . " new-window -ad " .
                 \ " -t " . a:candidate.window_id
@@ -104,7 +105,10 @@ function! s:action_table.new.func(candidate) " {{{
 endfunction "}}}
 
 function! s:action_table.move.func(candidate) " {{{
+    " Move the selected window to another
     call unite#print_message("[tmux] Select the target window")
+
+    " Open unite tmux/windows to select the window to move to
     call unite#start([[
                 \ 'tmux/windows',
                 \ a:candidate.socket,
@@ -114,7 +118,10 @@ function! s:action_table.move.func(candidate) " {{{
 endfunction "}}}
 
 function! s:action_table.swap.func(candidate) " {{{
+    " Swap two windows
     call unite#print_message("[tmux] Select the target window")
+
+    " Open unite tmux/windows to select the window to swap with
     call unite#start([[
                 \ 'tmux/windows',
                 \ a:candidate.socket,
@@ -124,6 +131,7 @@ function! s:action_table.swap.func(candidate) " {{{
 endfunction "}}}
 
 function! s:action_table.kill.func(candidate) " {{{
+    " Kill the selected window
     let l:tmux_cmd = tmux#tmux_cmd(a:candidate.socket)
     call unite#util#system(l:tmux_cmd . " kill-window " .
                 \ " -t " . a:candidate.window_id
@@ -132,7 +140,11 @@ endfunction "}}}
 let s:source.alias_table.delete = 'kill'
 
 function! s:action_table.link.func(candidate) " {{{
+    " Link the selected session to another session
     call unite#print_message("[tmux] Select the target window")
+
+    " Open unite tmux/sessions to select the window to link the selected window
+    " to
     call unite#start([[
                 \ 'tmux/sessions', 
                 \ a:candidate.socket,
@@ -142,6 +154,7 @@ function! s:action_table.link.func(candidate) " {{{
 endfunction "}}}
 
 function! s:action_table.unlink.func(candidate) " {{{
+    " Unlink the selected window from its session
     let l:tmux_cmd = tmux#tmux_cmd(a:candidate.socket)
     call unite#util#system(l:tmux_cmd . " unlink-window " .
                 \ " -t " . a:candidate.window_id
