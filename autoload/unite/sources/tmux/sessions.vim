@@ -1,7 +1,7 @@
 " File: sessions.vim
 " Author: Josiah Gordon <josiahg@gmail.com>
 " Description: Sessions actions source for unite
-" Last Modified: April 03, 2012
+" Last Modified: April 06, 2012
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -86,12 +86,34 @@ let s:action_table = {
             \ 'detach'    : {
             \   'description' : 'Detach all clients attached to this session',
             \   },
+            \ 'attach'    : {
+            \   'description' : 'Attach to selected session',
+            \   },
+            \ 'rattach'    : {
+            \   'description' : 'Readonly attach to selected session',
+            \   },
             \ 'lock'    : {
             \   'description' : 'Lock session',
             \   },
             \ }
 let s:source.action_table.tmux = s:action_table
 " }}}
+
+function! s:action_table.attach.func(candidate) " {{{
+    " Attach to selected session.
+    let l:tmux_cmd = tmux#tmux_cmd(a:candidate.socket)
+    call unite#util#system(l:tmux_cmd . " attach-session " .
+                \ " -t " . a:candidate.session_id
+                \ )
+endfunction "}}}
+
+function! s:action_table.rattach.func(candidate) " {{{
+    " Attach to selected session in readonly mode.
+    let l:tmux_cmd = tmux#tmux_cmd(a:candidate.socket)
+    call unite#util#system(l:tmux_cmd . " attach-session -r " .
+                \ " -t " . a:candidate.session_id
+                \ )
+endfunction "}}}
 
 function! s:action_table.linknew.func(candidate) " {{{
     " Create a session linked with the selected session.
