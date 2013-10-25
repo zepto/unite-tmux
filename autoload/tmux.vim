@@ -1,7 +1,7 @@
 " File: tmux.vim
 " Author: Josiah Gordon <josiahg@gmail.com>
 " Description: Tmux plugin to send buffers and commands to tmux panes.
-" Last Modified: March 16, 2012
+" Last Modified: October 25, 2013
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -29,6 +29,19 @@ set cpo&vim
 " tmux#select_pane: Start unite tmux/panes to select a pane. " {{{
 function! tmux#select_pane()
     Unite -buffer-name=tmux -default-action=selectpane tmux/panes
+endfunction " }}}
+
+" tmux#switch_session: Switch to specified session. " {{{
+function! tmux#switch_session(session_id)
+    if empty(a:session_id)
+        exe "Unite -buffer-name=tmux -default-action=switch tmux/sessions"
+        return
+    endif
+
+    " Get the tmux command to use.
+    let l:tmux_cmd = tmux#tmux_cmd()
+
+    call unite#util#system(l:tmux_cmd . " switch-client -t " . a:session_id)
 endfunction " }}}
 
 " tmux#send_range: Send a range of text to g:tmux_pane. " {{{
